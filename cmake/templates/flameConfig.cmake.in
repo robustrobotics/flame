@@ -1,0 +1,29 @@
+# Config file for the module example
+# It defines the following variables:
+# ${PROJECT_NAME}_INCLUDE_DIR  - Location of header files
+# ${PROJECT_NAME}_INCLUDE_DIRS - All include directories needed to use ${PROJECT_NAME}
+# ${PROJECT_NAME}_LIBRARY      - ${PROJECT_NAME} library
+# ${PROJECT_NAME}_LIBRARIES    - ${PROJECT_NAME} library and all dependent libraries
+# ${PROJECT_NAME}_DEFINITIONS  - Compiler definitions as semicolon separated list
+find_library(@PROJECT_NAME@_LIBRARY flame
+  PATHS @CMAKE_INSTALL_PREFIX@/lib
+  NO_DEFAULT_PATH
+  )
+set(@PROJECT_NAME@_LIBRARIES
+  ${@PROJECT_NAME@_LIBRARY}
+  ${OpenCV_LIBS}
+  ${Boost_LIBRARIES})
+
+find_path(@PROJECT_NAME@_INCLUDE_DIR flame/utils/assert.h
+  PATHS @CMAKE_INSTALL_PREFIX@/include
+  NO_DEFAULT_PATH
+  )
+
+set(@PROJECT_NAME@_INCLUDE_DIRS
+  ${@PROJECT_NAME@_INCLUDE_DIR}
+  ${OpenCV_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${Sophus_INCLUDE_DIRS})
+
+set(@PROJECT_NAME@_DEFINITIONS "-std=c++11")
