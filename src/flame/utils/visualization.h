@@ -238,7 +238,11 @@ inline void applyColorMapLine(const cv::Point2f& A, const cv::Point2f& B,
                               float alpha, cv::Mat* img) {
   FLAME_ASSERT(img->channels() == 3);
   FLAME_ASSERT(img->isContinuous());
+#if CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3
+  FLAME_ASSERT(img->type() == cv::traits::Type<cv::Vec3b>::value);
+#else
   FLAME_ASSERT(img->type() == cv::DataType<cv::Vec3b>::type);
+#endif
 
   cv::LineIterator it(*img, A, B);
   float slope0 = (B_val - A_val) / (it.count);
@@ -282,6 +286,9 @@ void applyColorMap(const cv::Mat& img, ColorMap map, cv::Mat3b* out) {
   return;
 }
 
+#if CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION <= 2
+// cv::Mat_<uint32_t> is not supported in OpenCV 3.3.
+
 /**
  * \brief Convert a 32-bit Census image to RGB image.
  *
@@ -309,6 +316,7 @@ inline void censusToRGB(const cv::Mat_<uint32_t>& img, cv::Mat3b* out,
 
   return;
 }
+#endif
 
 // /**
 //  * \brief Colormap for an inverse depth estimate.
