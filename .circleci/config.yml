@@ -1,0 +1,36 @@
+# Configuration file for CircleCI 2.0.
+version: 2
+jobs:
+  # Main build job.
+  build:
+    docker:
+      # Only need kinetic image so that we can easily use OpenCV 3.3.
+      - image: osrf/ros:kinetic-desktop-full
+    steps:
+      # Commands to checkout/build repo and run unit tests.
+      - checkout
+      - run: apt-get install libboost-all-dev
+      - run: mkdir -p ./dependencies/src
+      - run: ./scripts/eigen.sh ./dependencies/src ./dependencies
+      - run: ./scripts/sophus.sh ./dependencies/src ./dependencies
+      - run: cp ./scripts/env.sh ./dependencies
+      - run: mkdir ./build && mkdir ./install
+      - run: source /opt/ros/kinetic/setup.sh && source ./dependencies/env.sh && cd ./build && cmake -D CMAKE_INSTALL_PREFIX=../install ..
+      - run: make -C build install
+      - run: ./build/bin/flame_test
+
+# Two main workflows: One run per commit, one to run master nightly.
+workflows:
+  version: 2
+  commit-workflow:
+    jobs:
+      - build
+  nightly-workflow:
+    triggers:
+      - schedule:
+          cron: "0 1 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - build
