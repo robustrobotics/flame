@@ -14,3 +14,4 @@ jobs:
       - run: mkdir ./build && mkdir ./install
       - run: source /opt/ros/kinetic/setup.sh && source ./dependencies/env.sh && cd ./build && cmake -D CMAKE_INSTALL_PREFIX=../install ..
       - run: make -C build install
+      - run: ./build/bin/flame_test
