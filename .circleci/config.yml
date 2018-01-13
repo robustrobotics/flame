@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # Only need kinetic image so that we can easily use OpenCV 3.3.
+      - image: osrf/ros:kinetic-desktop-full
+    steps:
+      - checkout
+      - run: apt-get install libboost-all-dev
+      - run: mkdir -p ./dependencies/src
+      - run: ./scripts/eigen.sh ./dependencies/src ./dependencies
+      - run: ./scripts/sophus.sh ./dependencies/src ./dependencies
+      - run: cp ./scripts/env.sh ./dependencies
+      - run: mkdir ./build && mkdir ./install
+      - run: source /opt/ros/kinetic/setup.sh && source ./dependencies/env.sh && cd ./build && cmake -D CMAKE_INSTALL_PREFIX=../install ..
+      - run: make -C build install
